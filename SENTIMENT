@@ -1,0 +1,47 @@
+import pandas as pd
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
+import plotly.express as px
+
+# Download VADER lexicon
+nltk.download('vader_lexicon')
+sia = SentimentIntensityAnalyzer()
+
+# Sample dataset with reviews
+data = {
+    "Review": [
+        "Amazing product! Works perfectly.",
+        "Worst experience ever. Totally disappointed!",
+        "The product is okay, but not great.",
+        "Excellent quality and fast delivery.",
+        "Not worth the price. I regret buying it.",
+        "Decent item, but customer service was terrible!",
+        "Loved it! Would buy again.",
+        "Horrible! Do not purchase.",
+        "It's fine, does the job.",
+        "Best purchase I've made recently!"
+    ]
+}
+
+# Create DataFrame
+reviews_df = pd.DataFrame(data)
+
+# Perform Sentiment Analysis
+def get_sentiment(review):
+    score = sia.polarity_scores(review)
+    if score['compound'] >= 0.05:
+        return "Positive"
+    elif score['compound'] <= -0.05:
+        return "Negative"
+    else:
+        return "Neutral"
+
+# Apply sentiment analysis
+reviews_df["Sentiment"] = reviews_df["Review"].apply(get_sentiment)
+
+# Plot sentiment distribution
+fig = px.histogram(reviews_df, x="Sentiment", title="Sentiment Distribution", color="Sentiment")
+fig.show()
+
+# Display DataFrame with sentiments
+print(reviews_df)
